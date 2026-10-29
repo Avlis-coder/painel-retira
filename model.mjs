@@ -11,11 +11,31 @@ export function ageDays(row, now = new Date()) {
   if (!start || now < start) return null;
   return (now.getTime() - start.getTime()) / 86400000;
 }
-export function filterRows(rows, filters = {}) {
+export function managersForStore(store, config) {
+  const names = config?.stores?.[String(store)];
+  return Array.isArray(names) ? [...new Set(names.filter(name => typeof name === 'string' && name.trim()).map(name => name.trim()))] : [];
+}
+export function listManagers(config) {
+  const associations = [];
+  for (const store of Object.keys(config?.stores ?? {})) {
+    for (const name of managersForStore(store, config)) associations.push({name, store});
+  }
+  return associations.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR') || a.store.localeCompare(b.store, 'pt-BR', {numeric:true}));
+}
+export function storeForManager(name, config) {
+  const target = normalize(name);
+  if (!target) return null;
+  const stores = [...new Set(listManagers(config).filter(manager => normalize(manager.name) === target).map(manager => manager.store))];
+  return stores.length === 1 ? stores[0] : null;
+}
+export function filterRows(rows, filters = {}, config) {
   const terms = normalize(filters.search).split(' ').filter(Boolean);
+  const managerStore = filters.manager ? storeForManager(filters.manager, config) : null;
+  if (filters.manager && managerStore === null) return [];
   return rows.filter(row =>
     (!filters.currentStore || row.currentStore === filters.currentStore) &&
     (!filters.originStore || row.originStore === filters.originStore) &&
+    (!filters.manager || row.originStore === managerStore) &&
     (!filters.seller || row.seller === filters.seller) &&
     (!filters.status || row.status === filters.status) &&
     (!terms.length || terms.every(term => normalize(`${row.note} ${row.client} ${row.dav}`).includes(term)))
@@ -49,6 +69,10 @@ export function groupRows(rows, key) {
   }
   return [...groups].map(([label, values]) => ({label, ...summarize(values)})).sort((a,b) => b.notes-a.notes || a.label.localeCompare(b.label, 'pt-BR', {numeric:true}));
 }
+export function makeOwnerGroups(rows, config) {
+  return groupRows(rows, 'originStore').map(({label, ...totals}) => ({store:label, names:managersForStore(label, config), ...totals}))
+    .sort((a, b) => a.store.localeCompare(b.store, 'pt-BR', {numeric:true}));
+}
 export function formatAge(days) {
   if (days === null) return 'Não disponível';
   const minutes = Math.floor(days * 1440);
@@ -63,9 +87,14 @@ const csvCell = value => {
   if (/^[=+@-]/.test(text)) text = `'${text}`;
   return `"${text.replaceAll('"', '""')}"`;
 };
-export function makeCsv(rows, now = new Date()) {
+export function makeCsv(rows, now = new Date(), config) {
   const header = ['Nota', 'DAV', 'Cliente', 'Vendedor', 'Loja atual', 'Loja de origem', 'Situação', 'Itens', 'Data da nota', 'Início da separação', 'Fim da conferência', 'Tempo de espera (dias)', 'Marco do tempo', 'Consulta em (Fortaleza)'];
+  if (config) header.push('Responsáveis da loja de origem');
   const consultation = new Intl.DateTimeFormat('pt-BR', {timeZone:'America/Fortaleza', dateStyle:'short', timeStyle:'medium'}).format(now);
-  const lines = rows.map(row => [row.note, row.dav, row.client, row.seller, row.currentStore, row.originStore, row.status, row.items, row.noteDate, row.separationStart, row.conferenceEnd, ageDays(row,now)?.toFixed(4).replace('.',','), row.status === COMPLETE ? 'Fim da conferência' : 'Início da separação', consultation]);
+  const lines = rows.map(row => {
+    const line = [row.note, row.dav, row.client, row.seller, row.currentStore, row.originStore, row.status, row.items, row.noteDate, row.separationStart, row.conferenceEnd, ageDays(row,now)?.toFixed(4).replace('.',','), row.status === COMPLETE ? 'Fim da conferência' : 'Início da separação', consultation];
+    if (config) line.push(managersForStore(row.originStore, config).join(' / '));
+    return line;
+  });
   return '\uFEFF' + [header, ...lines].map(line => line.map(csvCell).join(';')).join('\r\n');
 }

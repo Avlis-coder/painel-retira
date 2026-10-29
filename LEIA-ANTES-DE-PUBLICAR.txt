@@ -1,0 +1,61 @@
+PAINEL RETIRA — PUBLICAÇÃO NO GITHUB PAGES
+
+ANTES DE PUBLICAR
+Este pacote contém os dados reais da planilha de 29/10/2026: nomes de clientes,
+notas, vendedores, lojas, datas e itens. O GitHub Pages de uma conta pessoal
+disponibiliza o site publicamente. Os arquivos deste pacote não implementam
+login, código por e-mail nem restrição a pessoas autorizadas.
+
+Se o acesso tiver de ficar limitado às lideranças, mantenha este pacote local
+ou em repositório privado e use hospedagem protegida por autenticação.
+Não envie os dados reais a um repositório público para um painel restrito.
+
+ATUALIZAR O PAINEL QUE JÁ ESTÁ PUBLICADO
+1. Extraia este ZIP no computador.
+2. Abra o mesmo repositório onde publicou o painel anterior.
+3. Use Add file > Upload files e envie todos os arquivos extraídos na raiz.
+   Os arquivos com o mesmo nome serão substituídos. É indispensável enviar
+   também o NOVO responsaveis.json, que vincula as lideranças às lojas de origem.
+4. Confirme em Commit changes na mesma branch usada pelo Pages.
+5. Aguarde a atualização e abra o mesmo link do painel.
+   Se a versão anterior continuar aparecendo, pressione Ctrl+F5 no navegador.
+
+RESPONSABILIDADE E GRÁFICOS
+O filtro por responsável usa a loja de ORIGEM da nota, como definido.
+Os responsáveis da mesma loja compartilham os indicadores da unidade.
+Não há divisão individual das notas entre as pessoas e os totais não duplicam.
+A loja atual permanece como local do material e aciona a loja de origem.
+Loja atual 40 não tem responsáveis próprios; suas notas mantêm a origem.
+Os gráficos mostram notas por loja atual e situação, itens por loja atual,
+os 10 vendedores com mais notas e as 10 notas há mais tempo sem retirada.
+Todos respeitam os filtros e permitem clicar nas barras para consultar notas.
+
+PASSOS PARA PRIMEIRA PUBLICAÇÃO PÚBLICA
+1. Extraia este ZIP em uma pasta no computador.
+2. No GitHub, crie um repositório chamado painel-retira.
+   No plano GitHub Free, o repositório de um site Pages precisa ser público.
+   Um plano que aceite repositório privado para Pages não torna o site privado.
+3. Use Add file > Upload files e envie os arquivos extraídos para a raiz.
+   Não envie o ZIP nem uma pasta contendo os arquivos. O index.html deve
+   aparecer diretamente na lista principal do repositório.
+4. Confirme o envio com Commit changes, usando a branch main.
+5. Abra Settings > Pages.
+6. Em Source, escolha Deploy from a branch.
+7. Selecione main e /(root), depois clique em Save.
+8. Aguarde a publicação. O link aparecerá em Settings > Pages > Visit site,
+   normalmente no formato https://SEU-USUARIO.github.io/painel-retira/.
+
+ARQUIVOS DO PAINEL
+index.html, styles.css, app.js, model.mjs, data.json e responsaveis.json
+devem ficar juntos.
+.nojekyll é um arquivo vazio que dispensa o processamento pelo Jekyll.
+Este arquivo de instruções pode ser mantido apenas no computador.
+
+ATUALIZAÇÃO DOS DADOS
+As pendências são uma fotografia da planilha enviada. A lista não tem conexão
+automática com o sistema da empresa. Apenas o tempo de espera avança até a
+hora da consulta. Publicar uma nova base exige preparar e substituir data.json.
+
+FONTES OFICIAIS
+https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site
+https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site

@@ -1,0 +1,9 @@
+{
+  "basis": "originStore",
+  "stores": {
+    "10": ["Alex Frazão", "Vanessa", "Gustavo Santos", "Alan Pinho"],
+    "20": ["Welsson Diniz", "Reinaldo Martins"],
+    "30": ["Ribamar Castro", "Luis Madeira", "Marcylene Cangussu"],
+    "50": ["Sergio"]
+  }
+}
