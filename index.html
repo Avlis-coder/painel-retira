@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#142b4c">
+  <meta name="description" content="Painel de acompanhamento das notas retira pendentes por loja, vendedor e situação.">
+  <title>Retira pendente — Centro Elétrico</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="./" aria-label="Centro Elétrico, início"><span class="brand-monogram">CE</span><span class="brand-name">CENTRO ELÉTRICO<span>Operação de lojas</span></span></a>
+      <div class="source-chip"><span class="source-dot"></span>Base de 29 out 2026</div>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <section class="page-heading" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow">Acompanhamento por unidade</p>
+        <h1 id="page-title">Retira pendente<span class="title-dot">.</span></h1>
+        <p class="page-description">Consulte as notas, identifique os vendedores e acompanhe o material que aguarda retirada.</p>
+      </div>
+      <div class="reference-date"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 11h18m-13 5h2m4 0h2"/></svg><div><span>Tempo calculado até</span><strong id="elapsed-reference">Hoje</strong></div></div>
+    </section>
+
+    <div class="responsibility-note"><span class="note-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h13m-4-4 4 4-4 4M20 17H7m4-4-4 4 4 4"/></svg></span><p><strong>Responsabilidade pelo acompanhamento</strong><span>A loja atual aciona a loja de origem. Quando forem iguais, o atendimento fica na própria unidade.</span></p></div>
+
+    <div id="data-error" class="data-error" role="alert" hidden></div>
+
+    <section class="filter-panel" aria-label="Filtros do painel">
+      <div class="filter-title"><span class="section-kicker"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M7 12h10m-7 5h4"/></svg>Filtrar pendências</span><button type="button" id="reset-filters" class="text-button">Limpar filtros<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10M17 7 7 17"/></svg></button></div>
+      <div class="filters-grid">
+        <label class="field"><span>Loja atual</span><select id="current-store"><option value="">Todas as lojas</option></select></label>
+        <label class="field"><span>Loja de origem</span><select id="origin-store"><option value="">Todas as lojas</option></select></label>
+        <label class="field field-seller"><span>Vendedor</span><select id="seller"><option value="">Todos os vendedores</option></select></label>
+        <label class="field"><span>Situação</span><select id="status"><option value="">Todas as situações</option></select></label>
+        <label class="field field-search"><span>Buscar nota ou cliente</span><span class="search-wrap"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><input id="search" type="search" placeholder="Nota, cliente ou DAV" autocomplete="off"></span></label>
+      </div>
+    </section>
+
+    <section class="kpi-grid" aria-label="Resumo das notas filtradas" aria-live="polite">
+      <article class="kpi-card kpi-primary"><div class="kpi-top"><span>Notas pendentes</span><span class="kpi-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h8l4 4v14H5V3h2m8 0v5h4M8 12h8m-8 4h6"/></svg></span></div><strong id="total-notes" class="kpi-value">—</strong><p>Somente tipo de entrega retira</p></article>
+      <article class="kpi-card"><div class="kpi-top"><span>Quantidade de itens</span><span class="kpi-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5v9l-9 5-9-5V8l9-5Zm0 9 9-4m-9 4L3 8m9 4v10M7.5 5.5l9 5"/></svg></span></div><strong id="total-items" class="kpi-value">—</strong><p>Itens informados nas notas</p></article>
+      <article class="kpi-card"><div class="kpi-top"><span>Conferência finalizada</span><span class="kpi-icon icon-green"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg></span></div><strong id="total-completed" class="kpi-value">—</strong><p><span class="legend-dot green"></span>Material conferido</p></article>
+      <article class="kpi-card"><div class="kpi-top"><span>Aguardando conferente</span><span class="kpi-icon icon-amber"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span></div><strong id="total-waiting" class="kpi-value">—</strong><p><span class="legend-dot amber"></span>Conferência pendente</p></article>
+    </section>
+
+    <section class="overview-grid" aria-label="Distribuição das pendências">
+      <article class="panel stores-panel"><div class="panel-heading"><div><h2>Notas por loja atual</h2><p>Unidade onde está o material</p></div><span class="small-label">NOTAS</span></div><div id="store-bars" class="store-bars"></div><p class="panel-footnote">Os resultados acompanham os filtros selecionados.</p></article>
+      <article class="panel sellers-panel"><div class="panel-heading"><div><h2>Notas por vendedor</h2><p>Responsáveis pela venda na origem</p></div><span class="small-label">NOTAS</span></div><div class="seller-table-scroll"><table class="seller-table"><thead><tr><th scope="col">Vendedor</th><th scope="col">Notas</th><th scope="col">Itens</th></tr></thead><tbody id="seller-summary"></tbody></table></div><p id="seller-summary-info" class="panel-footnote">Os resultados acompanham os filtros selecionados.</p></article>
+    </section>
+
+    <section class="panel detail-panel" aria-labelledby="detail-title">
+      <div class="detail-header"><div><div class="heading-line"><h2 id="detail-title">Notas para acompanhamento</h2><span class="retira-tag">RETIRA</span></div><p id="results-count" aria-live="polite">Carregando notas…</p></div><button type="button" id="export-csv" class="export-button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 16v5h16v-5"/></svg>Baixar lista filtrada</button></div>
+      <div class="table-toolbar"><span>Consulte o tempo de espera e acione a loja de origem.</span><label class="sort-field" for="sort-by">Ordenar por<select id="sort-by"><option value="age-desc">Maior tempo de espera</option><option value="age-asc">Menor tempo de espera</option><option value="note-desc">Data da nota mais recente</option></select></label></div>
+      <div class="notes-table-scroll"><table class="notes-table"><thead><tr><th scope="col">Nota</th><th scope="col">Cliente</th><th scope="col">Vendedor</th><th scope="col">Loja atual</th><th scope="col">Loja origem</th><th scope="col">Situação</th><th scope="col">Tempo de espera</th><th scope="col">Itens</th></tr></thead><tbody id="notes-body"></tbody></table></div>
+      <div id="empty-state" class="empty-state" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5M7 10h6"/></svg><strong>Nenhuma nota encontrada</strong><p>Altere a busca ou limpe os filtros para consultar outras notas.</p></div>
+      <div class="pagination"><span id="page-info" aria-live="polite">—</span><div><button type="button" id="prev-page" class="page-button" aria-label="Página anterior"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg>Anterior</button><button type="button" id="next-page" class="page-button" aria-label="Próxima página">Próxima<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6 6 6-6 6"/></svg></button></div></div>
+    </section>
+
+    <footer class="page-footer"><div class="method-block"><span class="footer-label">Como o tempo é contado</span><p id="age-method-note">Conferidas: desde o fim da conferência. Aguardando conferente: desde o início da separação. Os tempos são calculados até hoje.</p></div><div class="source-block"><span class="footer-label">Base de dados</span><p id="source-info">Planilha de 29/10/2026 às 15:20. As pendências refletem essa extração e não são atualizadas automaticamente.</p></div></footer>
+  </main>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
+
